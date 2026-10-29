@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Laboratorio educativo de fisiología del ejercicio, perfil biométrico, nutrición y actividad física.">
+  <title>Laboratorio de la Salud</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --surface: #111c2e;
+      --surface-2: #17243a;
+      --line: rgb(202 220 255 / 12%);
+      --text: #eef4ff;
+      --muted: #a0aec4;
+      --cyan: #4ce2d0;
+      --blue: #68b6ff;
+      --lime: #a6eb69;
+      --orange: #ffb86b;
+      --red: #ff788a;
+      --shadow: 0 18px 50px rgb(0 0 0 / 22%);
+      font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-synthesis: none;
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f1f5fa;
+      --surface: #fff;
+      --surface-2: #f7f9fd;
+      --line: rgb(31 54 85 / 14%);
+      --text: #18263a;
+      --muted: #60718a;
+      --cyan: #058c83;
+      --blue: #2876c8;
+      --lime: #598c17;
+      --orange: #a45b0a;
+      --red: #c8364a;
+      --shadow: 0 18px 45px rgb(35 57 92 / 9%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 8% 0%, rgb(71 116 255 / 12%), transparent 34rem),
+        radial-gradient(ellipse at 92% 28%, rgb(49 211 174 / 8%), transparent 32rem),
+        var(--bg);
+      color: var(--text);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button, select { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    .app { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 22px 0 42px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: .9rem; font-weight: 800; }
+    .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgb(76 226 208 / 28%); border-radius: 12px; color: var(--cyan); background: rgb(76 226 208 / 9%); font-size: 1.2rem; }
+    .top-actions, .nav-tabs, .row, .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+    .button, .tab {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 40px; padding: 9px 13px; border: 1px solid var(--line);
+      border-radius: 11px; background: var(--surface); color: var(--text);
+      cursor: pointer; font-size: .82rem; font-weight: 700;
+    }
+    .button:hover, .tab:hover { border-color: var(--cyan); }
+    .button.primary { border-color: transparent; background: var(--cyan); color: #07151a; }
+    .button.danger { color: var(--red); }
+    .nav-tabs { margin: 0 0 17px; padding: 7px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); }
+    .tab { flex: 1 1 120px; border-color: transparent; background: transparent; color: var(--muted); }
+    .tab[aria-selected="true"] { border-color: var(--line); background: var(--surface-2); color: var(--cyan); }
+    .hero, .card {
+      border: 1px solid var(--line); border-radius: 20px; background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero { margin-bottom: 18px; padding: clamp(24px, 5vw, 42px); background: linear-gradient(120deg, rgb(76 226 208 / 10%), transparent 56%), var(--surface); }
+    .eyebrow { margin: 0 0 10px; color: var(--cyan); font-size: .72rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { max-width: 820px; margin: 0; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.08; letter-spacing: -.05em; }
+    .hero p:last-child { max-width: 760px; margin: 13px 0 0; color: var(--muted); line-height: 1.65; }
+    .view { display: none; }
+    .view.active { display: block; animation: appear .18s ease-out; }
+    @keyframes appear { from { opacity: .6; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 15px; }
+    .card { min-width: 0; padding: 20px; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    h2 { margin: 0; font-size: 1.18rem; letter-spacing: -.02em; }
+    h3 { margin: 0 0 8px; font-size: .98rem; }
+    p { line-height: 1.6; }
+    .muted, .help { color: var(--muted); }
+    .help { margin: 6px 0 0; font-size: .76rem; line-height: 1.55; }
+    .section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 17px; }
+    .section-head p { margin: 6px 0 0; color: var(--muted); font-size: .83rem; }
+    .field { display: grid; gap: 6px; margin: 0 0 13px; }
+    .field label { color: var(--muted); font-size: .78rem; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; min-height: 42px; padding: 10px 11px;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: var(--surface-2); color: var(--text);
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: var(--muted); opacity: .72; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+    .metric { padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-2); }
+    .metric span { display: block; color: var(--muted); font-size: .7rem; }
+    .metric strong { display: block; margin-top: 5px; font-size: 1.08rem; }
+    .notice { margin: 12px 0 0; padding: 12px 13px; border: 1px solid rgb(104 182 255 / 22%); border-radius: 11px; color: var(--muted); background: rgb(104 182 255 / 6%); font-size: .76rem; line-height: 1.55; }
+    .notice.warn { border-color: rgb(255 184 107 / 30%); background: rgb(255 184 107 / 7%); }
+    .notice.alert { border-color: rgb(255 120 138 / 38%); background: rgb(255 120 138 / 8%); color: var(--text); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .79rem; }
+    th, td { padding: 10px 9px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font-weight: 700; }
+    .concept-list { display: grid; gap: 9px; }
+    details { border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+    summary { padding: 13px; cursor: pointer; font-size: .86rem; font-weight: 750; }
+    details p { margin: 0; padding: 0 13px 14px; color: var(--muted); font-size: .8rem; }
+    .quiz-options { display: grid; gap: 8px; margin: 14px 0; }
+    .quiz-option { display: flex; align-items: flex-start; gap: 9px; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); cursor: pointer; font-size: .84rem; }
+    .quiz-option input { width: auto; min-height: auto; margin: 2px 0 0; accent-color: var(--cyan); }
+    .chat-log { display: grid; gap: 9px; max-height: 350px; overflow-y: auto; margin: 0 0 14px; }
+    .chat-message { max-width: 90%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-2); font-size: .83rem; line-height: 1.55; white-space: pre-wrap; }
+    .chat-message.user { justify-self: end; border-color: rgb(76 226 208 / 28%); }
+    .chat-form { display: flex; gap: 9px; }
+    .chat-form input { flex: 1; }
+    .milestones { display: grid; gap: 11px; margin-top: 15px; }
+    .milestone { padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-2); }
+    .milestone h3 { margin-bottom: 6px; color: var(--cyan); }
+    .milestone p { margin: 7px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.55; }
+    .milestone ul { margin: 8px 0 0; padding-left: 20px; font-size: .82rem; line-height: 1.6; }
+    .status { min-height: 1.2em; color: var(--muted); font-size: .78rem; }
+    .footer { margin: 18px 2px 0; color: var(--muted); font-size: .74rem; line-height: 1.6; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      .topbar { align-items: flex-start; }
+      .top-actions .button { min-height: 38px; padding: 8px 10px; }
+      .nav-tabs { gap: 5px; }
+      .tab { flex-basis: 30%; padding: 8px 7px; font-size: .75rem; }
+    }
+    @media (max-width: 460px) {
+      .app { width: min(100% - 20px, 1120px); padding-top: 12px; }
+      .two-col { grid-template-columns: 1fr; gap: 0; }
+      .card { padding: 15px; }
+      .brand { font-size: .78rem; }
+      .top-actions { gap: 5px; }
+      .top-actions .button { font-size: .72rem; }
+      .metrics { gap: 7px; }
+      .metric { padding: 10px; }
+    }
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --surface: #fff; --surface-2: #f5f7fa; --text: #18263a; --muted: #53647b; }
+      body { background: white; }
+      .app { width: 100%; padding: 0; }
+      .top-actions, .nav-tabs, .actions, .footer { display: none !important; }
+      .view { display: block !important; margin-bottom: 18px; }
+      .card, .hero { box-shadow: none; break-inside: avoid; }
+      .chat-form { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">♥</span>PAFDE · Herramienta educativa</div>
+      <div class="top-actions">
+        <button class="button" id="themeToggle" type="button">☀ Modo claro</button>
+        <button class="button" id="printButton" type="button">Imprimir / PDF</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Ciencias del ejercicio · Salud y bienestar</p>
+      <h1>Laboratorio de la Salud</h1>
+      <p>Explora tu perfil, aprende fisiología y consulta herramientas educativas para la actividad física y la alimentación. Los cálculos son estimaciones, no diagnósticos ni prescripciones.</p>
+    </section>
+
+    <nav class="nav-tabs" role="tablist" aria-label="Módulos del laboratorio">
+      <button class="tab" id="tab-profile" role="tab" aria-selected="true" aria-controls="view-profile" data-view="profile">Perfil</button>
+      <button class="tab" id="tab-physiology" role="tab" aria-selected="false" aria-controls="view-physiology" data-view="physiology">Fisiología</button>
+      <button class="tab" id="tab-diet" role="tab" aria-selected="false" aria-controls="view-diet" data-view="diet">Alimentación</button>
+      <button class="tab" id="tab-chat" role="tab" aria-selected="false" aria-controls="view-chat" data-view="chat">Chat educativo</button>
+      <button class="tab" id="tab-simulation" role="tab" aria-selected="false" aria-controls="view-simulation" data-view="simulation">Simulador futuro</button>
+    </nav>
+
+    <section class="view active" id="view-profile" role="tabpanel" aria-labelledby="tab-profile">
+      <div class="grid">
+        <form class="card span-5" id="profileForm">
+          <div class="section-head">
+            <div><h2>Perfil biométrico</h2><p>Registra los datos para calcular indicadores educativos.</p></div>
+          </div>
+          <div class="field"><label for="profileSelect">Perfiles guardados en este navegador</label><select id="profileSelect"><option value="">Perfil nuevo</option></select></div>
+          <div class="field"><label for="name">Nombre</label><input id="name" name="name" maxlength="60" required autocomplete="name" placeholder="Nombre del deportista"></div>
+          <div class="two-col">
+            <div class="field"><label for="age">Edad (años)</label><input id="age" name="age" type="number" min="1" max="110" step="1" value="25" required></div>
+            <div class="field"><label for="weight">Peso (kg)</label><input id="weight" name="weight" type="number" min="20" max="350" step="0.1" value="70" required></div>
+          </div>
+          <div class="two-col">
+            <div class="field"><label for="height">Talla (cm)</label><input id="height" name="height" type="number" min="100" max="250" step="0.1" value="170" required></div>
+            <div class="field"><label for="restingHr">FC en reposo (lpm)</label><input id="restingHr" name="restingHr" type="number" min="30" max="220" step="1" value="65" required></div>
+          </div>
+          <div class="field">
+            <label for="equationSex">Categoría para Harris-Benedict revisada</label>
+            <select id="equationSex" name="equationSex">
+              <option value="female">Mujer</option><option value="male">Hombre</option>
+              <option value="unspecified">No indicada (promedio de ecuaciones)</option>
+            </select>
+            <p class="help">La ecuación usa categorías binarias; si no son aplicables, la estimación puede diferir.</p>
+          </div>
+          <div class="field">
+            <label for="activity">Nivel de actividad habitual</label>
+            <select id="activity" name="activity">
+              <option value="0">Sedentario</option><option value="1">Ligero</option>
+              <option value="2" selected>Moderado</option><option value="3">Alto</option>
+              <option value="4">Muy alto</option>
+            </select>
+          </div>
+          <div class="field"><label for="fitness">Condición física</label><select id="fitness" name="fitness"><option value="beginner">Inicial / retomando</option><option value="intermediate" selected>Intermedia / activa</option><option value="advanced">Avanzada / entrenada</option></select></div>
+          <div class="field"><label for="limitations">Lesiones, condiciones o limitaciones relevantes</label><textarea id="limitations" name="limitations" maxlength="500" placeholder="Escribe “ninguna indicada” si no corresponde"></textarea></div>
+          <p class="status" id="profileStatus" role="status" aria-live="polite"></p>
+          <div class="actions">
+            <button class="button primary" type="submit">Guardar perfil y calcular</button>
+            <button class="button danger" id="deleteProfile" type="button">Eliminar perfil</button>
+          </div>
+        </form>
+
+        <div class="card span-7">
+          <div class="section-head"><div><h2 id="resultsTitle">Resultados</h2><p>Estimaciones que dependen de la precisión de los datos y de la respuesta individual.</p></div></div>
+          <div class="metrics" id="metrics" aria-live="polite">
+            <div class="metric"><span>IMC</span><strong>—</strong></div>
+            <div class="metric"><span>GEB estimado</span><strong>—</strong></div>
+            <div class="metric"><span>TDEE estimado</span><strong>—</strong></div>
+            <div class="metric"><span>FC máxima estimada</span><strong>—</strong></div>
+          </div>
+          <div class="notice" id="bmiNotice">Guarda un perfil para ver los resultados. El IMC es una medida de cribado, no un diagnóstico ni una medición directa de composición corporal.</div>
+          <h3 style="margin-top:20px">Zonas de frecuencia cardiaca · Karvonen</h3>
+          <p class="help" id="zoneNote">FC objetivo = FC reposo + (% intensidad × reserva cardiaca estimada).</p>
+          <div class="table-wrap" style="margin-top:10px">
+            <table><thead><tr><th>Zona</th><th>Intensidad</th><th>Rango estimado</th></tr></thead><tbody id="zonesBody"><tr><td colspan="3">Guarda un perfil para calcular zonas.</td></tr></tbody></table>
+          </div>
+          <p class="notice warn">FC máxima estimada con 220 − edad. Tanto esa fórmula como los límites de zona tienen variabilidad individual; no deben usarse como único criterio para prescribir ejercicio.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-physiology" role="tabpanel" aria-labelledby="tab-physiology" hidden>
+      <div class="grid">
+        <section class="card span-6">
+          <div class="section-head"><div><h2>Conceptos clave</h2><p>Explora los sistemas energéticos y adaptaciones del organismo.</p></div></div>
+          <div class="concept-list">
+            <details><summary>Sistema de fosfágenos (ATP-PCr)</summary><p>Aporta energía inmediata en acciones explosivas y muy breves. La fosfocreatina ayuda a resintetizar ATP; la recuperación entre esfuerzos permite reponer parcialmente sus reservas.</p></details>
+            <details><summary>Sistema glucolítico</summary><p>Degrada glucosa o glucógeno para producir ATP con rapidez. Contribuye de manera importante en esfuerzos intensos. El lactato es un metabolito reutilizable como combustible, no la única causa de fatiga.</p></details>
+            <details><summary>Sistema oxidativo</summary><p>Utiliza oxígeno en las mitocondrias para obtener ATP de carbohidratos y grasas, y en menor medida de aminoácidos. Su producción es más lenta, pero sostiene esfuerzos prolongados.</p></details>
+            <details><summary>Fatiga muscular</summary><p>Reducción temporal de la capacidad para producir fuerza o mantener el rendimiento. Es multifactorial: intervienen sistema nervioso y músculo, combustible, temperatura, sueño, hidratación y carga de entrenamiento.</p></details>
+            <details><summary>Adaptaciones cardiorrespiratorias</summary><p>El entrenamiento aeróbico regular puede mejorar el volumen sistólico, el transporte y uso de oxígeno y la eficiencia submáxima. La adaptación varía según la dosis, recuperación, edad y estado de salud.</p></details>
+          </div>
+        </section>
+        <section class="card span-6">
+          <div class="section-head"><div><h2>Mini-cuestionario</h2><p>Responde cuatro preguntas y consulta la explicación.</p></div></div>
+          <div id="quizContent" aria-live="polite"></div>
+          <div class="actions"><button class="button primary" id="quizStart" type="button">Iniciar cuestionario</button></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="view-diet" role="tabpanel" aria-labelledby="tab-diet" hidden>
+      <div class="grid">
+        <form class="card span-5" id="dietForm">
+          <div class="section-head"><div><h2>Plan alimentario educativo</h2><p>Un menú de ejemplo con presupuesto y alimentos accesibles.</p></div></div>
+          <div class="field"><label for="dietProfile">Perfil para el cálculo</label><select id="dietProfile" required><option value="">Selecciona un perfil</option></select></div>
+          <div class="field"><label for="planType">Tipo de plan</label><select id="planType"><option value="auto">Inferir del nivel de actividad</option><option value="sedentary">Persona sedentaria</option><option value="active">Persona activa</option><option value="athlete">Deportista de alto rendimiento</option></select></div>
+          <div class="field"><label for="region">País o región</label><input id="region" maxlength="80" required placeholder="Ej.: región andina"></div>
+          <div class="two-col">
+            <div class="field"><label for="currency">Moneda</label><input id="currency" maxlength="12" value="USD" required></div>
+            <div class="field"><label for="budget">Presupuesto mensual</label><input id="budget" type="number" min="0.01" max="1000000000" step="0.01" required placeholder="Ej.: 250"></div>
+          </div>
+          <p class="notice warn">No se inventan precios locales. El presupuesto se distribuye como referencia; compara precios de temporada en tu región y ajusta el menú.</p>
+          <button class="button primary" type="submit">Generar menú diario</button>
+        </form>
+        <section class="card span-7" aria-labelledby="dietTitle">
+          <div class="section-head"><div><h2 id="dietTitle">Tu menú aparecerá aquí</h2><p id="dietIntro">Selecciona un perfil y proporciona tu presupuesto alimentario.</p></div></div>
+          <div id="dietOutput"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="view-chat" role="tabpanel" aria-labelledby="tab-chat" hidden>
+      <div class="grid">
+        <section class="card span-8">
+          <div class="section-head"><div><h2>Chatbot educativo</h2><p>Escribe una pregunta sobre entrenamiento, nutrición, descanso o fisiología.</p></div></div>
+          <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-relevant="additions">
+            <div class="chat-message">¡Hola! Puedo ofrecer orientación general. Prueba: “¿Cómo mejorar el descanso?” o “¿Qué es la fatiga muscular?”</div>
+          </div>
+          <form class="chat-form" id="chatForm"><input id="chatInput" maxlength="500" required aria-label="Escribe tu pregunta" placeholder="Escribe tu pregunta…"><button class="button primary" type="submit">Enviar</button></form>
+        </section>
+        <aside class="card span-4"><h2>Temas sugeridos</h2><p class="help">El chatbot identifica palabras clave y responde con información general; no consulta fuentes externas ni realiza diagnósticos.</p><div class="concept-list" style="margin-top:14px"><button class="button prompt" type="button" data-prompt="¿Cómo progresar mi entrenamiento?">Entrenamiento</button><button class="button prompt" type="button" data-prompt="¿Qué puedo comer para nutrirme mejor?">Nutrición</button><button class="button prompt" type="button" data-prompt="¿Cómo mejorar el descanso y el sueño?">Descanso</button><button class="button prompt" type="button" data-prompt="¿Qué es la fatiga muscular?">Fisiología</button></div></aside>
+      </div>
+    </section>
+
+    <section class="view" id="view-simulation" role="tabpanel" aria-labelledby="tab-simulation" hidden>
+      <div class="grid">
+        <form class="card span-5" id="simulationForm">
+          <div class="section-head"><div><h2>Diseña un escenario</h2><p>Indica tus hábitos actuales y lo que planeas sostener.</p></div></div>
+          <div class="field"><label for="simulationProfile">Perfil</label><select id="simulationProfile" required><option value="">Selecciona un perfil</option></select></div>
+          <div class="two-col">
+            <div class="field"><label for="currentMinutes">Actividad aeróbica actual (min/semana)</label><input id="currentMinutes" type="number" min="0" max="1200" step="5" value="60" required></div>
+            <div class="field"><label for="simulationAdherence">Constancia prevista (%)</label><input id="simulationAdherence" type="number" min="10" max="100" step="5" value="80" required></div>
+          </div>
+          <div class="two-col">
+            <div class="field"><label for="targetDays">Sesiones aeróbicas por semana</label><input id="targetDays" type="number" min="1" max="7" step="1" value="4" required></div>
+            <div class="field"><label for="targetMinutes">Minutos por sesión</label><input id="targetMinutes" type="number" min="10" max="180" step="5" value="30" required></div>
+          </div>
+          <div class="two-col">
+            <div class="field"><label for="strengthDays">Sesiones de fuerza por semana</label><input id="strengthDays" type="number" min="0" max="7" step="1" value="2" required></div>
+            <div class="field"><label for="simulationWeeks">Duración del escenario</label><select id="simulationWeeks"><option value="4">4 semanas</option><option value="8" selected>8 semanas</option><option value="12">12 semanas</option><option value="24">24 semanas</option></select></div>
+          </div>
+          <div class="field"><label for="sleepHours">Sueño habitual (horas por noche)</label><input id="sleepHours" type="number" min="0" max="16" step="0.5" value="7" required></div>
+          <p class="help">Ingresa minutos de actividad moderada (o equivalente moderado); las actividades vigorosas no se convierten automáticamente en este cálculo.</p>
+          <p class="notice warn">El escenario supone que aumentas gradualmente la actividad durante las primeras 4 semanas y luego sostienes el plan con la constancia indicada. No predice peso, presión arterial ni resultados clínicos individuales.</p>
+          <button class="button primary" type="submit">Simular mi escenario</button>
+        </section>
+        <section class="card span-7"><div class="section-head"><div><h2 id="simulationTitle">Posibles cambios en el tiempo</h2><p id="simulationIntro">Completa tus datos para explorar el escenario.</p></div></div><div id="simulationOutput" aria-live="polite"><p class="help">La simulación mostrará el volumen de actividad que podrías acumular y adaptaciones que pueden ocurrir si mantienes el plan. Son posibilidades, no garantías.</p></div></section>
+      </div>
+    </section>
+
+    <p class="footer">Uso académico y educativo. Este laboratorio no diagnostica, trata enfermedades ni sustituye la evaluación de profesionales de salud, nutrición o actividad física. Si aparecen síntomas importantes durante el ejercicio, detente y solicita atención sanitaria.</p>
+  </main>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "laboratorioSalud.profiles.v1";
+    const ACTIVITY_FACTORS = [1.2, 1.375, 1.55, 1.725, 1.9];
+    const ACTIVITY_NAMES = ["Sedentario", "Ligero", "Moderado", "Alto", "Muy alto"];
+    const ZONES = [
+      { name: "Recuperación", low: 0.50, high: 0.60 },
+      { name: "Aeróbica moderada", low: 0.60, high: 0.70 },
+      { name: "Umbral aeróbico aproximado", low: 0.70, high: 0.80 },
+      { name: "Umbral anaeróbico aproximado", low: 0.80, high: 0.90 },
+      { name: "Alta intensidad", low: 0.90, high: 1.00 }
+    ];
+    const QUIZ = [
+      { question: "¿Qué sistema aporta energía inmediata en un sprint de pocos segundos?", options: ["Oxidativo", "Fosfágenos (ATP-PCr)", "Solo el sistema digestivo"], correct: 1, explanation: "El sistema ATP-PCr contribuye de forma predominante en esfuerzos explosivos breves." },
+      { question: "¿Cuál afirmación sobre el lactato es más precisa?", options: ["Es un residuo sin utilidad", "Es un metabolito reutilizable como combustible", "Es la única causa de fatiga"], correct: 1, explanation: "El lactato puede transportarse y oxidarse; la fatiga tiene múltiples causas." },
+      { question: "¿Qué adaptación puede producir el entrenamiento aeróbico regular?", options: ["Menor capacidad de usar oxígeno", "Mejoras en el transporte y uso de oxígeno", "Eliminación de la necesidad de recuperación"], correct: 1, explanation: "El entrenamiento puede mejorar componentes cardiovasculares y periféricos." },
+      { question: "¿Qué describe mejor la fatiga muscular?", options: ["Un fenómeno con múltiples factores", "Solo falta de voluntad", "Siempre una lesión"], correct: 0, explanation: "La fatiga es una reducción temporal del rendimiento y puede tener varias causas." }
+    ];
+    let profiles = loadProfiles();
+    let currentQuiz = 0;
+    let quizScore = 0;
+
+    function $(selector) { return document.querySelector(selector); }
+
+    function loadProfiles() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed.filter(isValidProfile) : [];
+      } catch (error) {
+        console.error("No se pudieron leer los perfiles guardados.", error);
+        window.addEventListener("DOMContentLoaded", function () {
+          $("#profileStatus").textContent = "No se pudieron leer los perfiles guardados de este navegador.";
+        }, { once: true });
+        return [];
+      }
+    }
+
+    function isValidProfile(profile) {
+      return profile && typeof profile.id === "string" && typeof profile.name === "string"
+        && Number.isInteger(profile.age) && profile.age >= 1 && profile.age <= 110
+        && Number.isFinite(profile.weight) && profile.weight >= 20 && profile.weight <= 350
+        && Number.isFinite(profile.height) && profile.height >= 100 && profile.height <= 250
+        && Number.isFinite(profile.restingHr) && profile.restingHr >= 30 && profile.restingHr <= 220
+        && Number.isInteger(profile.activity) && profile.activity >= 0 && profile.activity < 5
+        && ["male", "female", "unspecified"].includes(profile.equationSex);
+    }
+
+    function saveProfiles() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+        $("#profileStatus").textContent = "Perfil guardado en este navegador.";
+        return true;
+      } catch (error) {
+        console.error("No se pudieron guardar los perfiles.", error);
+        $("#profileStatus").textContent = "Error: no se pudo guardar. Comprueba el espacio disponible y los permisos del navegador.";
+        return false;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (character) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character];
+      });
+    }
+
+    function number(value, digits) {
+      return new Intl.NumberFormat("es", { maximumFractionDigits: digits === undefined ? 1 : digits }).format(value);
+    }
+
+    function getGeb(profile) {
+      const { weight, height, age, equationSex } = profile;
+      const male = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
+      const female = 447.593 + 9.247 * weight + 3.098 * height - 4.330 * age;
+      if (equationSex === "male") return male;
+      if (equationSex === "female") return female;
+      return (male + female) / 2;
+    }
+
+    function getTdee(profile, factor) {
+      return getGeb(profile) * (factor === undefined ? ACTIVITY_FACTORS[profile.activity] : factor);
+    }
+
+    function bmiCategory(bmi) {
+      if (bmi < 18.5) return "Bajo peso";
+      if (bmi < 25) return "Rango de referencia";
+      if (bmi < 30) return "Sobrepeso";
+      return "Obesidad (clasificación por IMC)";
+    }
+
+    function renderProfiles() {
+      const select = $("#profileSelect");
+      const selected = select.value;
+      select.replaceChildren(new Option("Perfil nuevo", ""));
+      profiles.forEach(function (profile) {
+        select.add(new Option(profile.name + " · " + profile.age + " años", profile.id));
+      });
+      if (profiles.some(function (profile) { return profile.id === selected; })) select.value = selected;
+      ["#dietProfile", "#simulationProfile"].forEach(function (selector) {
+        const target = $(selector);
+        const prior = target.value;
+        target.replaceChildren(new Option("Selecciona un perfil", ""));
+        profiles.forEach(function (profile) {
+          target.add(new Option(profile.name + " · " + profile.age + " años", profile.id));
+        });
+        if (profiles.some(function (profile) { return profile.id === prior; })) target.value = prior;
+      });
+    }
+
+    function profileFromForm() {
+      const form = $("#profileForm");
+      if (!form.reportValidity()) return null;
+      const profile = {
+        id: $("#profileSelect").value || (window.crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
+        name: $("#name").value.trim(),
+        age: Number($("#age").value),
+        weight: Number($("#weight").value),
+        height: Number($("#height").value),
+        restingHr: Number($("#restingHr").value),
+        equationSex: $("#equationSex").value,
+        activity: Number($("#activity").value),
+        fitness: $("#fitness").value,
+        limitations: $("#limitations").value.trim()
+      };
+      if (!profile.name || !isValidProfile(profile)) {
+        $("#profileStatus").textContent = "Revisa los datos: hay valores fuera de los límites permitidos.";
+        return null;
+      }
+      return profile;
+    }
+
+    function renderResults(profile) {
+      const bmi = profile.weight / Math.pow(profile.height / 100, 2);
+      const geb = getGeb(profile);
+      const tdee = getTdee(profile);
+      const maxHr = 220 - profile.age;
+      $("#resultsTitle").textContent = "Resultados · " + profile.name;
+      const values = [
+        ["IMC", number(bmi, 1)],
+        ["GEB Harris-Benedict revisada", number(geb, 0) + " kcal/día"],
+        ["TDEE estimado", number(tdee, 0) + " kcal/día"],
+        ["FC máxima estimada", number(maxHr, 0) + " lpm"]
+      ];
+      $("#metrics").innerHTML = values.map(function (item) {
+        return '<div class="metric"><span>' + escapeHtml(item[0]) + '</span><strong>' + escapeHtml(item[1]) + '</strong></div>';
+      }).join("");
+      const category = profile.age < 18
+        ? "En menores de 18 años se requieren percentiles por edad y sexo; la clasificación adulta no aplica."
+        : "Clasificación orientativa: " + bmiCategory(bmi) + ". El IMC no diagnostica ni mide directamente la composición corporal.";
+      $("#bmiNotice").textContent = category + (profile.equationSex === "unspecified" ? " Para el GEB se promediaron las dos ecuaciones Harris-Benedict revisadas." : "");
+      if (profile.age < 18) $("#bmiNotice").classList.add("warn");
+      else $("#bmiNotice").classList.remove("warn");
+
+      const reserve = maxHr - profile.restingHr;
+      if (reserve <= 0) {
+        $("#zonesBody").innerHTML = '<tr><td colspan="3">No se calculan zonas: la FC en reposo alcanza o supera esta estimación de FC máxima. Solicita orientación profesional para una medición individual.</td></tr>';
+        $("#zoneNote").textContent = "La reserva estimada no es positiva, así que las zonas de Karvonen no son aplicables.";
+      } else {
+        $("#zonesBody").innerHTML = ZONES.map(function (zone) {
+          const low = Math.round(profile.restingHr + reserve * zone.low);
+          const high = Math.round(profile.restingHr + reserve * zone.high);
+          return "<tr><td>" + escapeHtml(zone.name) + "</td><td>" + Math.round(zone.low * 100) + "–" + Math.round(zone.high * 100) + "%</td><td>" + low + "–" + high + " lpm</td></tr>";
+        }).join("");
+        $("#zoneNote").textContent = "FC reposo: " + number(profile.restingHr, 0) + " lpm · Reserva estimada: " + number(reserve, 0) + " lpm.";
+      }
+      if (profile.age < 18) {
+        $("#zoneNote").textContent += " En menores, estas estimaciones no sustituyen una valoración pediátrica.";
+      }
+    }
+
+    function fillForm(profile) {
+      $("#name").value = profile.name;
+      $("#age").value = profile.age;
+      $("#weight").value = profile.weight;
+      $("#height").value = profile.height;
+      $("#restingHr").value = profile.restingHr;
+      $("#equationSex").value = profile.equationSex;
+      $("#activity").value = profile.activity;
+      $("#fitness").value = profile.fitness || "beginner";
+      $("#limitations").value = profile.limitations || "";
+      renderResults(profile);
+    }
+
+    document.querySelectorAll(".tab").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        document.querySelectorAll(".tab").forEach(function (item) {
+          const selected = item === tab;
+          item.setAttribute("aria-selected", String(selected));
+          $("#" + item.getAttribute("aria-controls")).hidden = !selected;
+          $("#" + item.getAttribute("aria-controls")).classList.toggle("active", selected);
+        });
+      });
+      tab.addEventListener("keydown", function (event) {
+        if (!["ArrowRight", "ArrowLeft"].includes(event.key)) return;
+        event.preventDefault();
+        const tabs = Array.from(document.querySelectorAll(".tab"));
+        const index = tabs.indexOf(tab);
+        const next = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+        next.focus();
+        next.click();
+      });
+    });
+
+    $("#profileForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const profile = profileFromForm();
+      if (!profile) return;
+      const index = profiles.findIndex(function (item) { return item.id === profile.id; });
+      if (index >= 0) profiles[index] = profile;
+      else profiles.push(profile);
+      renderProfiles();
+      $("#profileSelect").value = profile.id;
+      renderResults(profile);
+      saveProfiles();
+    });
+
+    $("#profileSelect").addEventListener("change", function () {
+      const profile = profiles.find(function (item) { return item.id === $("#profileSelect").value; });
+      if (profile) fillForm(profile);
+      else {
+        $("#profileForm").reset();
+        $("#age").value = "25";
+        $("#weight").value = "70";
+        $("#height").value = "170";
+        $("#restingHr").value = "65";
+        $("#profileStatus").textContent = "Nuevo perfil.";
+      }
+    });
+
+    $("#deleteProfile").addEventListener("click", function () {
+      const id = $("#profileSelect").value;
+      if (!id) {
+        $("#profileStatus").textContent = "Selecciona un perfil guardado para eliminarlo.";
+        return;
+      }
+      const profile = profiles.find(function (item) { return item.id === id; });
+      if (!profile || !window.confirm("¿Eliminar el perfil de " + profile.name + " de este navegador?")) return;
+      profiles = profiles.filter(function (item) { return item.id !== id; });
+      renderProfiles();
+      $("#profileForm").reset();
+      $("#age").value = "25";
+      $("#weight").value = "70";
+      $("#height").value = "170";
+      $("#restingHr").value = "65";
+      $("#profileStatus").textContent = saveProfiles() ? "Perfil eliminado." : "No se pudo guardar el cambio.";
+      $("#resultsTitle").textContent = "Resultados";
+      $("#metrics").innerHTML = '<div class="metric"><span>IMC</span><strong>—</strong></div><div class="metric"><span>GEB estimado</span><strong>—</strong></div><div class="metric"><span>TDEE estimado</span><strong>—</strong></div><div class="metric"><span>FC máxima estimada</span><strong>—</strong></div>';
+      $("#zonesBody").innerHTML = "<tr><td colspan=\"3\">Guarda un perfil para calcular zonas.</td></tr>";
+      $("#bmiNotice").textContent = "Guarda un perfil para ver los resultados. El IMC es una medida de cribado, no un diagnóstico ni una medición directa de composición corporal.";
+    });
+
+    function startQuiz() {
+      currentQuiz = 0;
+      quizScore = 0;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const container = $("#quizContent");
+      if (currentQuiz >= QUIZ.length) {
+        container.innerHTML = "<p><strong>Resultado: " + quizScore + " de " + QUIZ.length + ".</strong> Repasa los conceptos y vuelve a intentarlo cuando quieras.</p>";
+        $("#quizStart").textContent = "Intentar de nuevo";
+        return;
+      }
+      const item = QUIZ[currentQuiz];
+      container.innerHTML = '<h3>Pregunta ' + (currentQuiz + 1) + " de " + QUIZ.length + ": " + escapeHtml(item.question) + '</h3><div class="quiz-options">' +
+        item.options.map(function (option, index) {
+          return '<label class="quiz-option"><input type="radio" name="quizAnswer" value="' + index + '"><span>' + escapeHtml(option) + "</span></label>";
+        }).join("") + '</div><p class="status" id="quizFeedback" role="status"></p><button class="button primary" id="quizNext" type="button">Comprobar respuesta</button>';
+      $("#quizNext").addEventListener("click", function () {
+        const selected = container.querySelector('input[name="quizAnswer"]:checked');
+        if (!selected) {
+          $("#quizFeedback").textContent = "Selecciona una respuesta antes de continuar.";
+          return;
+        }
+        const correct = Number(selected.value) === item.correct;
+        if (correct) quizScore += 1;
+        $("#quizFeedback").textContent = (correct ? "Correcto. " : "No es la opción más adecuada. ") + item.explanation;
+        $("#quizNext").textContent = currentQuiz === QUIZ.length - 1 ? "Ver resultado" : "Siguiente pregunta";
+        $("#quizNext").onclick = function () {
+          currentQuiz += 1;
+          renderQuizQuestion();
+        };
+      }, { once: true });
+    }
+
+    $("#quizStart").addEventListener("click", startQuiz);
+
+    $("#dietForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.reportValidity()) return;
+      const profile = profiles.find(function (item) { return item.id === $("#dietProfile").value; });
+      if (!profile) {
+        $("#dietIntro").textContent = "Selecciona primero un perfil biométrico válido.";
+        return;
+      }
+      const budget = Number($("#budget").value);
+      if (!Number.isFinite(budget) || budget <= 0) {
+        $("#budget").focus();
+        return;
+      }
+      const chosenType = $("#planType").value;
+      const category = chosenType === "auto"
+        ? (profile.activity === 0 ? "sedentario" : (profile.activity >= 3 ? "athlete" : "active"))
+        : chosenType;
+      const typeLabel = category === "sedentary" ? "persona sedentaria"
+        : (category === "active" ? "persona activa" : "deportista de alto rendimiento");
+      const factor = chosenType === "auto" ? ACTIVITY_FACTORS[profile.activity]
+        : (category === "sedentary" ? 1.2 : (category === "active" ? 1.55 : 1.9));
+      const tdee = getTdee(profile, factor);
+      const energy = Math.max(1000, tdee);
+      const proteinFactor = category === "sedentary" ? 1.0 : (category === "active" ? 1.3 : 1.6);
+      const protein = proteinFactor * profile.weight;
+      const fat = energy * 0.30 / 9;
+      const carbs = Math.max(0, (energy - protein * 4 - fat * 9) / 4);
+      const dailyBudget = budget / 30;
+      const currency = $("#currency").value.trim();
+      const region = $("#region").value.trim();
+      const allocation = [["Desayuno", .20], ["Almuerzo", .35], ["Merienda", .15], ["Colación", .10], ["Cena", .20]];
+      const budgetList = allocation.map(function (item) {
+        return "<li>" + item[0] + ": " + number(item[1] * 100, 0) + "% (~" + escapeHtml(currency) + " " + number(dailyBudget * item[1], 2) + " al día)</li>";
+      }).join("");
+      const scaled = Math.max(.75, Math.min(energy / 1850, 1.35));
+      $("#dietTitle").textContent = "Menú de ejemplo · " + profile.name;
+      $("#dietIntro").textContent = "Tipo de plan: " + typeLabel + ". Adaptación sugerida para " + region + ".";
+      $("#dietOutput").innerHTML =
+        '<div class="metrics"><div class="metric"><span>Presupuesto mensual</span><strong>' + escapeHtml(currency) + " " + number(budget, 2) + '</strong></div><div class="metric"><span>Presupuesto diario aproximado</span><strong>' + escapeHtml(currency) + " " + number(dailyBudget, 2) + '</strong></div><div class="metric"><span>Energía de referencia</span><strong>' + number(energy, 0) + ' kcal/día</strong></div><div class="metric"><span>Macros diarios orientativos</span><strong>' + number(protein, 0) + " P · " + number(carbs, 0) + " C · " + number(fat, 0) + " G</strong></div></div>" +
+        '<p class="help">P = proteína · C = carbohidratos · G = grasas. Estimación de macronutrientes basada en el perfil; no es una prescripción individual.</p>' +
+        '<h3 style="margin-top:18px">Distribución orientativa del presupuesto diario</h3><ul class="help">' + budgetList + "</ul>" +
+        '<h3 style="margin-top:18px">Menú diario accesible</h3><div class="concept-list">' +
+        '<details open><summary>Desayuno</summary><p>Avena con leche o bebida de soya, fruta de temporada y huevo. Aproximadamente 23 g de proteína, 62 g de carbohidratos y 18 g de grasa.</p></details>' +
+        '<details><summary>Almuerzo</summary><p>Frijoles o lentejas, arroz, maíz o papa local, verduras y huevo, pollo o pescado según disponibilidad. Aproximadamente 38 g de proteína, 90 g de carbohidratos y 18 g de grasa.</p></details>' +
+        '<details><summary>Merienda</summary><p>Yogur natural o alternativa enriquecida y fruta; o fruta con cacahuate/maní. Aproximadamente 12 g de proteína, 35 g de carbohidratos y 3 g de grasa.</p></details>' +
+        '<details><summary>Colación</summary><p>Fruta de temporada o una porción pequeña de cereal local, según hambre y horario. Aproximadamente 1 g de proteína, 15 g de carbohidratos y 0 g de grasa.</p></details>' +
+        '<details><summary>Cena</summary><p>Tortilla, pan o tubérculo, huevo o legumbres y verduras de temporada. Aproximadamente 24 g de proteína, 55 g de carbohidratos y 18 g de grasa.</p></details></div>' +
+        '<p class="notice">Macros del menú base: aproximadamente 98 g de proteína, 257 g de carbohidratos y 57 g de grasas. Escala ilustrativa de porciones para el gasto estimado: ×' + number(scaled, 2) + '. Ajusta con alimentos y precios reales de ' + escapeHtml(region) + '.</p>' +
+        '<p class="notice">Prioriza legumbres, huevos, avena, granos o tubérculos locales, verduras de temporada y agua segura. Hidrátate según sed y condiciones ambientales; no fuerces la sobrehidratación.</p>' +
+        (profile.age < 18 ? '<p class="notice warn">El perfil corresponde a un menor de edad: no uses estas cifras como metas. Las necesidades de crecimiento requieren valoración por un profesional de salud.</p>' : "") +
+        '<p class="help">Embarazo, enfermedad, trastorno alimentario, alergias o necesidades especiales requieren orientación profesional individual.</p>';
+    });
+
+    function normalize(text) {
+      return text.toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function chatbotAnswer(question) {
+      const text = normalize(question);
+      const alarms = ["dolor de pecho", "dolor toracico", "desmayo", "falta de aire", "dificultad para respirar", "palpitaciones", "sangrado", "lesion grave"];
+      if (alarms.some(function (term) { return text.includes(term); })) {
+        return "Tu mensaje podría describir una señal de alarma. Suspende el ejercicio; si los síntomas son intensos, nuevos o persistentes, busca atención médica urgente. Este chatbot no puede evaluar emergencias.";
+      }
+      if (["prote", "dieta", "comer", "nutri", "alimento"].some(function (term) { return text.includes(term); })) {
+        return "Prioriza alimentos variados y suficientes para tu actividad; legumbres, huevos y productos locales pueden ser opciones accesibles. Las cantidades dependen de salud, preferencias y entrenamiento; consulta a un profesional de nutrición si necesitas un plan clínico.";
+      }
+      if (["descanso", "dormir", "sueno", "recuper"].some(function (term) { return text.includes(term); })) {
+        return "El sueño adecuado y los días de recuperación apoyan la adaptación. Mantén horarios regulares y reduce la carga si persisten fatiga, dolor o baja del rendimiento.";
+      }
+      if (["entren", "ejercicio", "fuerza", "cardio", "rutina"].some(function (term) { return text.includes(term); })) {
+        return "Progresa gradualmente la frecuencia, duración o intensidad, evitando aumentarlas todas a la vez. Combina actividad aeróbica y fuerza según tu experiencia; detente ante síntomas inusuales.";
+      }
+      if (["fisiolog", "lactato", "fatiga", "energia", "energetic"].some(function (term) { return text.includes(term); })) {
+        return "Los sistemas de fosfágenos, glucolítico y oxidativo colaboran en toda actividad, aunque su contribución relativa cambia con intensidad y duración. El lactato puede reutilizarse como combustible; la fatiga es multifactorial.";
+      }
+      return "Puedo orientar sobre entrenamiento, nutrición, descanso y fisiología. Prueba con “¿cómo mejorar el descanso?” o “¿qué es la fatiga muscular?”. Mis respuestas son educativas, no diagnóstico ni tratamiento.";
+    }
+
+    function addChatMessage(text, who) {
+      const message = document.createElement("div");
+      message.className = "chat-message" + (who === "user" ? " user" : "");
+      message.textContent = text;
+      $("#chatLog").append(message);
+      $("#chatLog").scrollTop = $("#chatLog").scrollHeight;
+    }
+
+    $("#chatForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const input = $("#chatInput");
+      const question = input.value.trim();
+      if (!question) return;
+      addChatMessage(question, "user");
+      addChatMessage(chatbotAnswer(question), "assistant");
+      input.value = "";
+      input.focus();
+    });
+
+    document.querySelectorAll(".prompt").forEach(function (button) {
+      button.addEventListener("click", function () {
+        $("#chatInput").value = button.dataset.prompt;
+        $("#chatForm").requestSubmit();
+      });
+    });
+
+    $("#simulationForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.reportValidity()) return;
+      const profile = profiles.find(function (item) {
+        return item.id === $("#simulationProfile").value;
+      });
+      if (!profile) {
+        $("#simulationIntro").textContent = "Registra y selecciona un perfil antes de iniciar la simulación.";
+        return;
+      }
+
+      const currentMinutes = Number($("#currentMinutes").value);
+      const targetDays = Number($("#targetDays").value);
+      const minutesPerSession = Number($("#targetMinutes").value);
+      const strengthDays = Number($("#strengthDays").value);
+      const adherence = Number($("#simulationAdherence").value) / 100;
+      const weeks = Number($("#simulationWeeks").value);
+      const sleepHours = Number($("#sleepHours").value);
+      const inputsValid = Number.isFinite(currentMinutes) && currentMinutes >= 0 && currentMinutes <= 1200
+        && Number.isInteger(targetDays) && targetDays >= 1 && targetDays <= 7
+        && Number.isFinite(minutesPerSession) && minutesPerSession >= 10 && minutesPerSession <= 180
+        && Number.isInteger(strengthDays) && strengthDays >= 0 && strengthDays <= 7
+        && Number.isFinite(adherence) && adherence >= 0.1 && adherence <= 1
+        && Number.isFinite(sleepHours) && sleepHours >= 0 && sleepHours <= 16;
+      if (!inputsValid) {
+        $("#simulationIntro").textContent = "Revisa los valores ingresados; deben estar dentro de los rangos indicados.";
+        return;
+      }
+
+      const targetMinutes = targetDays * minutesPerSession;
+      const adult = profile.age >= 18;
+      const guidelineMinutes = adult ? 150 : 420;
+      const strengthGuideline = adult ? 2 : 3;
+      const limitationText = normalize(profile.limitations || "").trim();
+      const hasLimitations = Boolean(limitationText)
+        && !["ninguna", "no indicada", "no indicado", "sin limitaciones"].some(
+          function (term) { return limitationText.includes(term); });
+      const milestones = weeks <= 4 ? [weeks] : [4, 8, 12, 24].filter(function (week) {
+        return week <= weeks;
+      });
+
+      function plannedMinutesAt(week) {
+        const progress = Math.min(week / 4, 1);
+        return currentMinutes + (targetMinutes - currentMinutes) * progress;
+      }
+
+      function accumulatedMinutesAt(endWeek) {
+        let total = 0;
+        for (let week = 1; week <= endWeek; week += 1) {
+          const progress = Math.min(week / 4, 1);
+          const plannedThisWeek = currentMinutes + (targetMinutes - currentMinutes) * progress;
+          total += plannedThisWeek * adherence;
+        }
+        return total;
+      }
+
+      function adaptationNarrative(weeklyMinutes, realizedStrengthDays) {
+        const items = [];
+        if (weeklyMinutes >= guidelineMinutes) {
+          items.push(adult
+            ? "El volumen simulado alcanza la referencia general de al menos 150 min/semana de actividad aeróbica moderada para adultos."
+            : "El volumen simulado se acerca o alcanza la referencia general de 60 min diarios de actividad para niñas, niños y adolescentes.");
+          items.push("Si lo sostienes con recuperación adecuada, es posible que mejore gradualmente tu tolerancia al esfuerzo y tu capacidad aeróbica.");
+        } else {
+          items.push(adult
+            ? "El volumen aún queda por debajo de la referencia general de 150 min/semana; cualquier aumento progresivo desde tu nivel actual puede ser un paso útil."
+            : "El volumen aún queda por debajo de la referencia general de 60 min diarios para personas menores; conviene buscar actividad variada y apropiada para la edad.");
+          items.push("Con regularidad podrías practicar el hábito y mejorar tu tolerancia al movimiento; no es necesario alcanzar una meta de inmediato.");
+        }
+        if (realizedStrengthDays >= strengthGuideline) {
+          items.push("La frecuencia prevista de fuerza alcanza la referencia general de fortalecer los principales grupos musculares al menos " + strengthGuideline + " días por semana.");
+        } else {
+          items.push("La frecuencia de fuerza prevista es menor que la referencia general de " + strengthGuideline + " días por semana; puedes aumentarla gradualmente si tu salud y recuperación lo permiten.");
+        }
+        const sleepRecommendation = profile.age < 13 ? 9 : (profile.age < 18 ? 8 : 7);
+        if (sleepHours < sleepRecommendation) {
+          const sleepRange = profile.age < 13 ? "9–12 horas para escolares"
+            : (profile.age < 18 ? "8–10 horas para adolescentes" : "al menos 7 horas para adultos");
+          items.push("El sueño declarado está por debajo de una referencia general de " + sleepRange + "; la recuperación puede ser un factor limitante. Las necesidades individuales varían.");
+        } else {
+          items.push("El sueño declarado puede apoyar la recuperación, aunque las necesidades y la calidad del sueño varían entre personas.");
+        }
+        return items;
+      }
+
+      const summaryCards = [
+        ["Actividad planificada", number(targetMinutes, 0) + " min/semana"],
+        ["Con constancia prevista", number(targetMinutes * adherence, 0) + " min/semana"],
+        ["Fuerza planificada", number(strengthDays * adherence, 1) + " sesiones/semana (promedio)"],
+        ["Duración", weeks + " semanas"]
+      ];
+
+      const timeline = milestones.map(function (week) {
+        const plannedAt = plannedMinutesAt(week);
+        const achievedAt = plannedAt * adherence;
+        const total = accumulatedMinutesAt(week);
+        const strengthAt = strengthDays * adherence;
+        const outcomes = adaptationNarrative(achievedAt, strengthAt);
+        const progress = Math.round(Math.min(achievedAt / guidelineMinutes, 1) * 100);
+        return '<article class="milestone"><h3>Semana ' + week + '</h3>' +
+          '<p>Escenario promedio: aproximadamente ' + number(achievedAt, 0) +
+          ' min de actividad aeróbica y ' + number(strengthAt, 1) +
+          ' sesiones de fuerza por semana; acumulado aproximado: ' +
+          number(total, 0) + ' min de actividad.</p>' +
+          '<p>Proporción de la referencia semanal general: ' + progress + '%.</p><ul>' +
+          outcomes.map(function (item) { return "<li>" + escapeHtml(item) + "</li>"; }).join("") +
+          "</ul></article>";
+      }).join("");
+
+      const advice = profile.age < 18
+        ? "Al ser menor de edad, prioriza actividad variada, juego, técnica, supervisión y recuperación. La referencia de actividad se distribuye a lo largo de la semana y no implica entrenar intensamente todos los días."
+        : (profile.age >= 65
+          ? "Para mayores de 65 años, incluye equilibrio y fuerza adaptada; prefiere opciones de bajo impacto si ayudan a entrenar con comodidad y seguridad."
+          : "Combina actividad aeróbica con fuerza progresiva y días de recuperación. Aumenta una variable a la vez y ajusta la carga a cómo te sientes.");
+      const limitationNotice = hasLimitations
+        ? '<p class="notice warn">El perfil registra una limitación. Esta simulación no evalúa su causa ni seguridad: solicita orientación profesional para adaptar actividad, impacto e intensidad antes de iniciar o aumentar la carga.</p>'
+        : "";
+
+      $("#simulationTitle").textContent = "Escenario de actividad · " + profile.name;
+      $("#simulationIntro").textContent = "Proyección educativa a " + weeks + " semanas, suponiendo progresión y " +
+        number(adherence * 100, 0) + "% de constancia.";
+      $("#simulationOutput").innerHTML =
+        '<div class="metrics">' + summaryCards.map(function (item) {
+          return '<div class="metric"><span>' + escapeHtml(item[0]) + '</span><strong>' +
+            escapeHtml(item[1]) + "</strong></div>";
+        }).join("") + "</div>" +
+        '<p class="notice">El plan progresa desde ' + number(currentMinutes, 0) +
+        ' min/semana hacia ' + number(targetMinutes, 0) +
+        ' min/semana durante las primeras 4 semanas. Los cálculos de semanas y minutos son escenarios aritméticos, no resultados fisiológicos garantizados.</p>' +
+        '<div class="milestones">' + timeline + "</div>" +
+        '<p class="notice">' + escapeHtml(advice) + "</p>" + limitationNotice +
+        '<p class="help">Las respuestas al ejercicio son individuales: podrían cambiar tu tolerancia al esfuerzo, condición física o bienestar, pero el simulador no puede predecir cuánto cambiarán tu peso, IMC, FC en reposo, presión arterial ni riesgo de enfermedad. Detente y busca atención sanitaria ante dolor torácico, desmayo, falta de aire desproporcionada u otros síntomas preocupantes.</p>';
+    });
+
+    $("#themeToggle").addEventListener("click", function () {
+      const light = document.documentElement.dataset.theme !== "light";
+      document.documentElement.dataset.theme = light ? "light" : "dark";
+      $("#themeToggle").textContent = light ? "☾ Modo oscuro" : "☀ Modo claro";
+    });
+    $("#printButton").addEventListener("click", function () { window.print(); });
+
+    renderProfiles();
+    if (profiles.length > 0) {
+      const profile = profiles[profiles.length - 1];
+      $("#profileSelect").value = profile.id;
+      fillForm(profile);
+    }
+  </script>
+</body>
+</html>
